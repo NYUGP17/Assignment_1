@@ -26,8 +26,8 @@ When the build completes successfully, begin implementing the missing blocks in
 src/main.cpp as described by the assignment PDF.
 
 ## Submitting
-When you are done with the assignment, you will submit it by pushing it to a
-new repository on our NYUGP17 organization.
+When you finish the assignment, you will submit it by pushing it to a new
+repository on our NYUGP17 organization.
 
 1. Create a **private** repository in https://github.com/NYUGP17/ called
    **Assignment1_USER**, where USER is your github username that you entered in
@@ -39,5 +39,10 @@ git push https://github.com/NYUGP17/Assignment1_USER
 
 ## Travis-CI
 Every submission must build on Linux before it can be graded/considered
-complete. To check this, we will use Travis-CI, a tool for automatically
-rebuilding your code each time it is pushed.
+complete. To check this, you will use Travis-CI, a tool for automatically
+rebuilding your code each time you push it to GitHub.
+
+
+We already set up Travis-CI for this repository: Travis-CI works by running the
+script in '.travis.yml' each time new commits are pushed. To use Travis-CI for
+your own repository...
