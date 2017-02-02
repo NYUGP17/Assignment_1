@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/NYUGP17/Assignment_1.svg?branch=master)](https://travis-ci.org/NYUGP17/Assignment_1)
 # Assignment 1
 
 This repository contains the viewer code and data files you'll need for parts
@@ -43,6 +44,10 @@ complete. To check this, you will use Travis-CI, a tool for automatically
 rebuilding your code each time you push it to GitHub.
 
 
-We already set up Travis-CI for this repository: Travis-CI works by running the
-script in '.travis.yml' each time new commits are pushed. To use Travis-CI for
-your own repository...
+We've already configured Travis-CI for this repository: Travis-CI works by
+running the script in '.travis.yml' each time new commits are pushed. You will
+need to follow the [getting started
+instructions](https://travis-ci.com/getting_started) to sign into Travis-CI with
+your GitHub account, grant it permission, and enable builds on your private
+assignment repositories. Finally, you need to change the URL at the top of
+this README.md file to point to your repository's status.
