@@ -1,67 +1,74 @@
 cmake_minimum_required(VERSION 2.6)
 project(assignment1)
 
-# We will use the static library (e.g. the one built in the LibIGL
-# tutorials/build directory).
-SET(LIBIGL_USE_STATIC_LIBRARY  "YES")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+find_package(LIBIGL QUIET)
 
-SET(CMAKE_VERBOSE_MAKEFILE ON)
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake ${PROJECT_SOURCE_DIR}/cmake)
-set(CMAKE_COLOR_MAKEFILE ON)
-
-# Find packages...
-find_package(OpenGL REQUIRED)
-find_package(EIGEN REQUIRED)
-find_package(LIBIGL REQUIRED)
-find_package(GLFW REQUIRED)
-
-if(APPLE)
-    set(CMAKE_CXX_LINK_FLAGS "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-else(APPLE)
-    find_package(GLEW REQUIRED)
-    include_directories( ${GLEW_INCLUDE_DIR} )
-    if(UNIX)
-        set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -lGL -lGLU -lrt -lX11 -lXxf86vm -lXrandr -lpthread -lXi -ldl -lXcursor -lXinerama")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-    endif(UNIX)
-endif(APPLE)
-
-include_directories(${LIBIGL_INCLUDE_DIR} ${EIGEN_INCLUDE_DIR})
-include_directories(
-	/usr/local/include
-	/opt/local/include
-    ${PROJECT_SOURCE_DIR}
-    ${OPENGL_INCLUDE_DIR}
-)
-
-link_directories(
-	/usr/local/lib
-	/opt/local/lib
-)
-
-IF(CMAKE_BUILD_TYPE MATCHES RELEASE)
-    add_definitions(-DNDEBUG)
-ENDIF(CMAKE_BUILD_TYPE MATCHES RELEASE)
-
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-register")
+if (NOT LIBIGL_FOUND)
+   message(FATAL_ERROR "libigl not found --- You can download it using: \n git clone --recursive https://github.com/libigl/libigl.git ${PROJECT_SOURCE_DIR}/../libigl")
 endif()
 
-set(SHARED_LIBRARIES
-		${LIBIGL_LIBRARIES}
-		${OPENGL_LIBRARIES}
-		${EIGEN_LIBRARIES}
-		${GLEW_LIBRARIES}
-		${GLFW_LIBRARIES}
-)
+# Compilation flags: adapt to your needs 
+if(MSVC)
+  # Enable parallel compilation
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /bigobj") 
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR} )
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR} )
+else()
+  # Libigl requires a modern C++ compiler that supports c++11
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") 
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "." )
+endif()
 
-file(GLOB SOURCES
-    "${PROJECT_SOURCE_DIR}/src/*.h"
-    "${PROJECT_SOURCE_DIR}/src/*.cpp"
-)
-add_executable(${PROJECT_NAME}_bin ${SOURCES})
-target_link_libraries(${PROJECT_NAME}_bin ${SHARED_LIBRARIES} ${LIBIGL_LIBRARIES} ${GLFW_LIBRARIES})
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+
+# libigl options: choose between header only and compiled static library
+# Header-only is preferred for small projects. For larger projects the static build
+# considerably reduces the compilation times
+option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" OFF)
+
+# add a customizable menu bar
+option(LIBIGL_WITH_NANOGUI     "Use Nanogui menu"   OFF)
+
+# libigl options: choose your dependencies (by default everything is OFF except opengl) 
+option(LIBIGL_WITH_VIEWER      "Use OpenGL viewer"  ON)
+option(LIBIGL_WITH_OPENGL      "Use OpenGL"         ON)
+option(LIBIGL_WITH_OPENGL_GLFW "Use GLFW"           ON)
+option(LIBIGL_WITH_BBW         "Use BBW"            OFF)
+option(LIBIGL_WITH_EMBREE      "Use Embree"         OFF)
+option(LIBIGL_WITH_PNG         "Use PNG"            OFF)
+option(LIBIGL_WITH_TETGEN      "Use Tetgen"         OFF)
+option(LIBIGL_WITH_TRIANGLE    "Use Triangle"       OFF)
+option(LIBIGL_WITH_XML         "Use XML"            OFF)
+option(LIBIGL_WITH_LIM         "Use LIM"            OFF)
+option(LIBIGL_WITH_COMISO      "Use CoMiso"         OFF)
+option(LIBIGL_WITH_MATLAB      "Use Matlab"         OFF) # This option is not supported yet
+option(LIBIGL_WITH_MOSEK       "Use MOSEK"          OFF) # This option is not supported yet
+option(LIBIGL_WITH_CGAL        "Use CGAL"           OFF)
+if(LIBIGL_WITH_CGAL) # Do not remove or move this block, the cgal build system fails without it
+  find_package(CGAL REQUIRED)
+  set(CGAL_DONT_OVERRIDE_CMAKE_FLAGS TRUE CACHE BOOL "CGAL's CMAKE Setup is super annoying ")
+  include(${CGAL_USE_FILE})
+endif()
+
+# Adding libigl: choose the path to your local copy libigl 
+# This is going to compile everything you requested 
+#message(FATAL_ERROR "${PROJECT_SOURCE_DIR}/../libigl/cmake")
+add_subdirectory("${LIBIGL_INCLUDE_DIR}/../shared/cmake" "libigl")
+
+# libigl information 
+message("libigl includes: ${LIBIGL_INCLUDE_DIRS}")
+message("libigl libraries: ${LIBIGL_LIBRARIES}")
+message("libigl extra sources: ${LIBIGL_EXTRA_SOURCES}")
+message("libigl extra libraries: ${LIBIGL_EXTRA_LIBRARIES}")
+message("libigl definitions: ${LIBIGL_DEFINITIONS}")
+
+# Prepare the build environment
+include_directories(${LIBIGL_INCLUDE_DIRS})
+add_definitions(${LIBIGL_DEFINITIONS})
+
+# Add your project files
+FILE(GLOB SOURCES src/*.cpp)
+add_executable(${PROJECT_NAME}_bin ${SOURCES} ${LIBIGL_EXTRA_SOURCES})
+target_link_libraries(${PROJECT_NAME}_bin ${LIBIGL_LIBRARIES} ${LIBIGL_EXTRA_LIBRARIES})
