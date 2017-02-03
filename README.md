@@ -10,7 +10,7 @@ To begin, clone the repository:
 git clone https://github.com/NYUGP17/Assignment_1
 ```
 
-Next, please refer to the [Guidelines and Instructions](https://github.com/danielepanozzo/gp/raw/master/guidelines.pdf)
+Next, please refer to the [General Rules and Instructions](https://github.com/danielepanozzo/gp/raw/master/guidelines.pdf)
 handout for instructions on installing LIBIGL and its dependencies.
 
 ## Building and Completing the Assignment
