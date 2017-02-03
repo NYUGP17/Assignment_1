@@ -10,8 +10,8 @@ To begin, clone the repository:
 git clone https://github.com/NYUGP17/Assignment_1
 ```
 
-Next, please refer to part 1 of the assignment PDF ("First steps with LIBIGL")
-for instructions on installing LIBIGL and its dependencies.
+Next, please refer to the [Guidelines and Instructions](https://github.com/danielepanozzo/gp/raw/master/guidelines.pdf)
+handout for instructions on installing LIBIGL and its dependencies.
 
 ## Building and Completing the Assignment
 Once LIBIGL is set up (and pointed to by environment variable $LIBIGL_ROOT) you
@@ -42,7 +42,6 @@ git push https://github.com/NYUGP17/Assignment1_USER
 Every submission must build on Linux before it can be graded/considered
 complete. To check this, you will use Travis-CI, a tool for automatically
 rebuilding your code each time you push it to GitHub.
-
 
 We've already configured Travis-CI for this repository: Travis-CI works by
 running the script in '.travis.yml' each time new commits are pushed. You will
